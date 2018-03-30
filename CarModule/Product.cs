@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CarModule
 {
-    /*
-    "id": str,
-    "source": str,
-    "destination": str,
-    "route": [str],
-    */
     class Product
     {
         public String Id { get; set; }

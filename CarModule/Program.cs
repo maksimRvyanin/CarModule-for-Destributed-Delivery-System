@@ -16,38 +16,24 @@ namespace CarModule
     {
         static void Main(string[] args)
         {
-            Car car1 = new Car("car-1", 1);
-            Car car2 = new Car("car-2", 1);
-            Car car3 = new Car("car-3", 1);
-            Car car4 = new Car("car-4", 1);
-            Car car5 = new Car("car-5", 1);
-            Car car6 = new Car("car-6", 1);
-            Car car7 = new Car("car-7", 1);
-            Car car8 = new Car("car-8", 1);
+            Car car1 = new Car("car-1", 3);
+            Car car2 = new Car("car-2", 5);
+            Car car3 = new Car("car-3", 4);
+            Car car4 = new Car("car-4", 6);
+            Car car5 = new Car("car-5", 3);
+            Car car6 = new Car("car-6", 2);
+            Car car7 = new Car("car-7", 6);
+            Car car8 = new Car("car-8", 11);
 
             car1.PointFrom = "A";
-            car1.PointTo = "B";
-
-            car2.PointFrom = "B";
-            car2.PointTo = "C";
-
+            car2.PointFrom = "X";
             car3.PointFrom = "B";
-            car3.PointTo = "C";
+            car4.PointFrom = "E";
+            car5.PointFrom = "G";
+            car6.PointFrom = "Y";
+            car7.PointFrom = "Z";
+            car8.PointFrom = "N";
 
-            car4.PointFrom = "C";
-            car4.PointTo = "D";
-
-            car5.PointFrom = "D";
-            car5.PointTo = "E";
-
-            car6.PointFrom = "A";
-            car6.PointTo = "B";
-
-            car7.PointFrom = "A";
-            car7.PointTo = "D";
-
-            car8.PointFrom = "A";
-            car8.PointTo = "B";
             Thread car1Task = new Thread(() => Car.Work(car1));
             Thread car2Task = new Thread(() => Car.Work(car2));
             Thread car3Task = new Thread(() => Car.Work(car3));
