@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CarModule
+{
+    /*
+    "id": str,
+    "source": str,
+    "destination": str,
+    "route": [str],
+    */
+    class Product
+    {
+        public String Id { get; set; }
+        public String Source { get; set; }
+        public String Destination { get; set; }
+        public List<String> Route { get; set; }
+
+        public override string ToString()
+        {
+            string allRoutes = "[";
+            foreach (var point in Route)
+            {
+                allRoutes += point + ",";
+            }
+            allRoutes += "]";
+            return String.Format("Id={0}, Source={1}, Destination={2}, Route={3}", Id, Source, Destination, allRoutes);
+        }
+    }
+}

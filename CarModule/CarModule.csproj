@@ -53,8 +53,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Car.cs" />
-    <Compile Include="Item.cs" />
-    <Compile Include="logger.cs" />
+    <Compile Include="CarService.cs" />
+    <Compile Include="Product.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="MessageToProducts.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

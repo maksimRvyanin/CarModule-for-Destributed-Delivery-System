@@ -8,102 +8,70 @@ using System.Threading.Tasks;
 using CarModule;
 using System.Threading;
 using Newtonsoft.Json.Linq;
+using System.Net;
+
 namespace CarModule
 {
     class Program
     {
-        //public static string WriteFromObject()
-        //{
-        //    //Create User object.  
-        //    Car car = new Car("car2", 42);
-        //    car.Items.Add("itemid=12312341324, from=Russia, to=China");
-        //    car.Items.Add("itemid=12312341324, from=Russia, to=China");
-        //    car.Items.Add("itemid=12312341324, from=Russia, to=China");
-        //    car.Items.Add("itemid=12312341324, from=Russia, to=China");
-        //    //Create a stream to serialize the object to.  
-        //    MemoryStream ms = new MemoryStream();
-        //
-        //    // Serializer the User object to the stream.  
-        //    DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Car));
-        //    ser.WriteObject(ms, car);
-        //    byte[] json = ms.ToArray();
-        //    ms.Close();
-        //    return Encoding.UTF8.GetString(json, 0, json.Length);
-        //}
         static void Main(string[] args)
         {
-            //if (System.Diagnostics.Debugger.IsAttached)
-            //{
-            //    try
-            //    {
-            //        Car car = new Car("car1", 90);
-            //        car.PointFrom = "Warehouse1";
-            //        car.PointTo = "Warehouse2";
-            //        car.Items.Add("itemid=12312341324, from=Russia, to=China");
-            //        car.Items.Add("itemid=12312341324, from=Russia, to=China");
-            //        car.Items.Add("itemid=12312341324, from=Russia, to=China");
-            //        car.Items.Add("itemid=12312341324, from=Russia, to=China");
-
-            //        Car car2 = new Car("car2", 90);
-            //        car.PointFrom = "Warehouse3";
-            //        car.PointTo = "Warehouse4";
-            //        car.Items.Add("itemid=12312341324, from=Russia, to=China");
-            //        car.Items.Add("itemid=12312341324, from=Russia, to=China");
-            //        car.Items.Add("itemid=12312341324, from=Russia, to=China");
-            //        car.Items.Add("itemid=12312341324, from=Russia, to=China");
-
-            //        Thread Th1 = new Thread(new ThreadStart(car.OnTheRoad));
-            //        Thread Th2 = new Thread(new ThreadStart(car2.OnTheRoad));
-            //        Th1.Start();
-            //        Th2.Start();
-            //    }
-            //    catch(Exception e)
-            //    {
-            //        Console.WriteLine(e);
-            //        Console.Read();
-            //    }
-            //}
-            var json =
-@"
-{
-    'transportId':'car_maxim_pidor',
-    'storageId':'A',
-    'items':[
-                {
-                    'id':'product1',
-                    'from':'A',
-                    'to':'Z',
-                    'route':['A','B','X','Z']
-                },
-                {
-                    'id':'product1',
-                    'from':'A',
-                    'to':'Z',
-                    'route':['A','B','X','Z']
-                }
-            ]
-}";
-
-            var jobject = JObject.Parse(json);
-            var myclass = new MyClass()
+            var testCar = new Car("car-1", 100);
+            testCar.PointFrom = "A";
+            Car.GetProductsFromStorage(testCar);
+            foreach (var item in testCar.Products)
             {
-                transportId = jobject["transportId"].ToString(),
-                storageId = jobject["storageId"].ToString(),
-                items = jobject["items"],
-            };
-            Console.WriteLine(myclass.transportId);
+                Console.WriteLine(item);
+            }
             Console.Read();
-
         }
-        class MyClass
-        {
-            public string transportId;
-            public string storageId;
-            public JToken items;
-        }
-        //public void CarStartWorking(Car car)
-        //{
-        //    car.OnTheRoad();
-        //}
+        
     }
 }
+
+
+//class MyClass
+//{
+//    public string transportId;
+//    public string storageId;
+//    public JToken items;
+//}
+//static void Main(string[] args)
+//{
+
+
+//    var jobject = JObject.Parse(json);
+//    var myclass = new MyClass()
+//    {
+//        transportId = jobject["transportId"].ToString(),
+//        storageId = jobject["storageId"].ToString(),
+//        items = jobject["items"],
+//    };
+//    Console.WriteLine(myclass.transportId);
+//    foreach (var item in myclass.items)
+//    {
+//        Console.WriteLine(item);
+//    }
+//    Console.Read();
+
+//}
+//var json =
+//@"
+//{
+//    'transportId':'car_maxim_pidor',
+//    'storageId':'A',
+//    'items':[
+//                {
+//                    'id':'product1',
+//                    'from':'A',
+//                    'to':'Z',
+//                    'route':['A','B','X','Z']
+//                },
+//                {
+//                    'id':'product1',
+//                    'from':'A',
+//                    'to':'Z',
+//                    'route':['A','B','X','Z']
+//                }
+//            ]
+//}";
