@@ -16,9 +16,11 @@ namespace CarModule
     {
         static void Main(string[] args)
         {
-            var testCar1 = new Car("car-1", 1);
+            var testCar1 = new Car("car-1", 3);
             testCar1.PointFrom = "A";
+
             Car.GetProductsFromStorage(testCar1);
+            Car.PutProductsToStorage(testCar1);
             foreach (var item in testCar1.Products)
             {
                 Console.WriteLine(item);

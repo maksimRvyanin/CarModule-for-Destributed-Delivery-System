@@ -19,12 +19,12 @@ namespace CarModule
         public String transportId { get; private set; } //The car's Id, which can help identify the car from others.
         public Int32 Capacity { get; set; }//How much items the car can take.
         public List<Product> Products { get; set; }//products in the car.
-        public Int32 Speed { get; private set; }//The car's speed.
+        public Int32 Speed { get; private set; }//The car's speed, which depends on road length.
         public String PointTo { get; set; }//Point, in which the car goes
         public String PointFrom { get; set; }//Point, from which car goes.
         public Int32 RoadPercent { get; set; }//Percentage of travel.
         //Setting for lowercase
-        private JsonSerializerSettings _jsonSerializerSettings =
+        public static JsonSerializerSettings _jsonSerializerSettings =
             new JsonSerializerSettings
             {
                 ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
@@ -51,68 +51,72 @@ namespace CarModule
         /// </summary>
         public static void GetProductsFromStorage(Car car)
         {
-            string requestString = @"http://188.225.9.3/storages/" + car.PointFrom + "/products/prepare";
+            var requestString = @"http://188.225.9.3/storages/" + car.PointFrom + "/products/prepare";
             var json = "{\"capacity\": " + car.Capacity + "}";
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(requestString);
-            httpWebRequest.ContentType = "application/json";
-            httpWebRequest.Method = "POST";
-            httpWebRequest.Accept = "*/*";
-            var body = Encoding.UTF8.GetBytes(json);
-            using (Stream stream = httpWebRequest.GetRequestStream())
+            while (!car.Products.Any())
             {
-                stream.Write(body, 0, json.Length);
-                stream.Close();
-            }
-            string responseJson;
-            try
-            {
-                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create(requestString);
+                httpWebRequest.ContentType = "application/json";
+                httpWebRequest.Method = "POST";
+                httpWebRequest.Accept = "*/*";
+                var body = Encoding.UTF8.GetBytes(json);
+                using (Stream stream = httpWebRequest.GetRequestStream())
                 {
-                    responseJson = streamReader.ReadToEnd();
+                    stream.Write(body, 0, json.Length);
+                    stream.Close();
                 }
-                responseJson = responseJson.Substring(12, responseJson.Length - 13);
-                car.Products = JsonConvert.DeserializeObject<List<Product>>(responseJson);
-                car.PointTo  = car.Products[0].Destination;
+                string responseJson;
+                try
+                {
+                    var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                    using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                    {
+                        responseJson = streamReader.ReadToEnd();
+                    }
+                    responseJson = responseJson.Substring(12, responseJson.Length - 13);
+                    car.Products = JsonConvert.DeserializeObject<List<Product>>(responseJson);
+                }
+                catch (Exception e)
+                {
+                    //Если ошибка, то просто съедаем и работаем дальше, но в лог записываем
+                    Console.WriteLine(e);
+                }
             }
-            catch (Exception)
-            {
-                //Если ошибка, то просто съедаем и работаем дальше, но в лог записываем
-            }
-            
+            car.PointTo = car.Products[0].Destination;
         }
         public static void PutProductsToStorage(Car car)
         {
-            string requestString = @"http://188.225.9.3/storages/" + car.PointFrom + "/products/prepare";
-            var json = @"{
-                            'capacity':" + car.Capacity + @",
-                            'accessiblePoints': ''
-                         }";
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(requestString);
-            httpWebRequest.ContentType = "application/json";
-            httpWebRequest.Method = "POST";
-            httpWebRequest.ContentLength = json.Length;
-            var body = Encoding.UTF8.GetBytes(json);
-            using (Stream stream = httpWebRequest.GetRequestStream())
+            var requestString = @"http://188.225.9.3/storages/" + car.PointTo + "/products";
+            var productsJson = JsonConvert.SerializeObject(car.Products, _jsonSerializerSettings);
+            string json = "{\"products\": " + productsJson + ", \"transportId\": \"" + car.transportId + "\"}";
+            while (car.Products.Any())
             {
-                stream.Write(body, 0, json.Length);
-                stream.Close();
-            }
-            string responseJson;
-            try
-            {
-                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                var httpWebRequest = (HttpWebRequest)WebRequest.Create(requestString);
+                httpWebRequest.ContentType = "application/json";
+                httpWebRequest.Method = "POST";
+                httpWebRequest.Accept = "*/*";
+                var body = Encoding.UTF8.GetBytes(json);
+                using (Stream stream = httpWebRequest.GetRequestStream())
                 {
-                    responseJson = streamReader.ReadToEnd();
+                    stream.Write(body, 0, json.Length);
+                    stream.Close();
                 }
-                responseJson = responseJson.Substring(12, responseJson.Length - 13);
-                car.Products = JsonConvert.DeserializeObject<List<Product>>(responseJson);
+                try
+                {
+                    var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                    if(httpResponse.StatusCode.ToString()=="OK")
+                    {
+                        Console.WriteLine("All goods were put in storage {0}", car.PointTo);
+                    }
+                    car.Products.Clear();
+                }
+                catch (Exception e)
+                {
+                    //Если ошибка, то просто съедаем и работаем дальше, но в лог записываем
+                    Console.WriteLine(e);
+                }
             }
-            catch (Exception)
-            {
-                //Если ошибка, то просто съедаем и работаем дальше, но в лог записываем
-            }
+            car.PointFrom = car.PointTo;
         }
         #endregion
 
@@ -133,5 +137,10 @@ namespace CarModule
 
         }
         #endregion
+
+        public static void Work(Car car)
+        {
+
+        }
     }
 }
