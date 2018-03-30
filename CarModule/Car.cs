@@ -17,7 +17,7 @@ namespace CarModule
     class Car
     {
         public String transportId { get; private set; } //The car's Id, which can help identify the car from others.
-        public Int32 Capacity { get; private set; }//How much items the car can take.
+        public Int32 Capacity { get; set; }//How much items the car can take.
         public List<Product> Products { get; set; }//products in the car.
         public Int32 Speed { get; private set; }//The car's speed.
         public String PointTo { get; set; }//Point, in which the car goes
@@ -52,12 +52,44 @@ namespace CarModule
         public static void GetProductsFromStorage(Car car)
         {
             string requestString = @"http://188.225.9.3/storages/" + car.PointFrom + "/products/prepare";
+            var json = "{\"capacity\": " + car.Capacity + "}";
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(requestString);
+            httpWebRequest.ContentType = "application/json";
+            httpWebRequest.Method = "POST";
+            httpWebRequest.Accept = "*/*";
+            var body = Encoding.UTF8.GetBytes(json);
+            using (Stream stream = httpWebRequest.GetRequestStream())
+            {
+                stream.Write(body, 0, json.Length);
+                stream.Close();
+            }
+            string responseJson;
+            try
+            {
+                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    responseJson = streamReader.ReadToEnd();
+                }
+                responseJson = responseJson.Substring(12, responseJson.Length - 13);
+                car.Products = JsonConvert.DeserializeObject<List<Product>>(responseJson);
+                car.PointTo  = car.Products[0].Destination;
+            }
+            catch (Exception)
+            {
+                //Если ошибка, то просто съедаем и работаем дальше, но в лог записываем
+            }
+            
+        }
+        public static void PutProductsToStorage(Car car)
+        {
+            string requestString = @"http://188.225.9.3/storages/" + car.PointFrom + "/products/prepare";
             var json = @"{
                             'capacity':" + car.Capacity + @",
                             'accessiblePoints': ''
                          }";
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(requestString);
-            httpWebRequest.ContentType = "text/json";
+            httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "POST";
             httpWebRequest.ContentLength = json.Length;
             var body = Encoding.UTF8.GetBytes(json);
@@ -67,19 +99,20 @@ namespace CarModule
                 stream.Close();
             }
             string responseJson;
-            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            try
             {
-                responseJson = streamReader.ReadToEnd();
-                //Now you have your response.
-                //or false depending on information in the response
+                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    responseJson = streamReader.ReadToEnd();
+                }
+                responseJson = responseJson.Substring(12, responseJson.Length - 13);
+                car.Products = JsonConvert.DeserializeObject<List<Product>>(responseJson);
             }
-            responseJson = responseJson.Substring(12, responseJson.Length-13);
-            car.Products = JsonConvert.DeserializeObject<List<Product>>(responseJson);
-        }
-        public void PutProductsToStorage()
-        {
-
+            catch (Exception)
+            {
+                //Если ошибка, то просто съедаем и работаем дальше, но в лог записываем
+            }
         }
         #endregion
 

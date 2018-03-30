@@ -24,7 +24,10 @@ namespace CarModule
             string allRoutes = "[";
             foreach (var point in Route)
             {
-                allRoutes += point + ",";
+                if (point != Route[0] && point != Route[Route.Count - 1])
+                    allRoutes += ", " + point;
+                else
+                    allRoutes += point;
             }
             allRoutes += "]";
             return String.Format("Id={0}, Source={1}, Destination={2}, Route={3}", Id, Source, Destination, allRoutes);
