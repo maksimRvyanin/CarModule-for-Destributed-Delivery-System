@@ -15,10 +15,10 @@ namespace CarModule
         {
             logFileName = fileName;
         }
-        public void WriteLogInFile(string logString)
+        public void Log(string logString)
         {
             string toLogFile = String.Format("{0:d/M/yyyy HH:mm:ss}  {1}\r\n", DateTime.Now, logString);
-            File.WriteAllText(@"C:\logs\" + logFileName + ".txt", toLogFile);
+            File.AppendAllText(@"C:\logs\" + logFileName + ".txt", toLogFile);
         }
     }
 }
