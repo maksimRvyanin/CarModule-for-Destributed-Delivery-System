@@ -1,2 +1,2 @@
 # CarModule
-Модуль, реализующий сервис работы курьеров для доставки товаров, в данном случае автомобилей.
+Module simulates the car delivery service in destributed system.
